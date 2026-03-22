@@ -1,0 +1,5 @@
+*.egg-info
+*.so
+*.c
+out
+venv
