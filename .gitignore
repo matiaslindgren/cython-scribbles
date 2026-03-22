@@ -1,5 +1,9 @@
 *.egg-info
 *.so
 *.c
+*.py[co]
+*.html
+.pytest_cache
+!vendor/*
 out
 venv

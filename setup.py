@@ -1,9 +1,32 @@
-# do not edit
-# generated with `make setup.py` at 2026-03-22T16:47:28-04:00
-from setuptools import setup
+from setuptools import setup, Extension
 from Cython.Build import cythonize
+from pathlib import Path
+
+
+def sources(*paths: str) -> list[Path]:
+    return [Path("./src") / p for p in paths]
+
+
+ext_modules = [
+    Extension(
+        "empty",
+        sources=sources("empty.pyx"),
+    ),
+    Extension(
+        "is_prime",
+        sources=sources("is_prime.pyx", "vendor/prime.c"),
+        libraries=["m"],
+    ),
+    Extension(
+        "hello_lib",
+        sources=sources("hello_lib.pyx"),
+    ),
+]
 
 setup(
     name="cython_scribbles",
-    ext_modules=cythonize([pyx for pyx in "empty.pyx hello_lib.pyx".split(" ")]),
+    ext_modules=cythonize(
+        ext_modules,
+        annotate=True,
+    ),
 )

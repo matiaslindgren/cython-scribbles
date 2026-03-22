@@ -1,7 +1,0 @@
-from setuptools import setup
-from Cython.Build import cythonize
-
-setup(
-    name="${MODULE_NAME}",
-    ext_modules=cythonize([pyx for pyx in "${SOURCE_PATHS}".split(" ")]),
-)

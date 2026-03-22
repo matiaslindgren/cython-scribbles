@@ -17,3 +17,10 @@ dev = [
   "setuptools >= 77.0.3",
   "Cython>=3.2.4,<4",
 ]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+src = ["src"]
+line-length = 100
