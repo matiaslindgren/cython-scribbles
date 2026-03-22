@@ -1,15 +1,30 @@
-name: make test
+name: build and test
 
-on: [push]
+on:
+  push:
+    branches: main
+    paths-ignore:
+      - '.gitignore'
+      - '*.md'
 
 jobs:
-  test:
-    runs-on: ubuntu-24.04
+  build-and-test:
+    strategy:
+      matrix:
+        platform:
+          - ubuntu-24.04
+          - macos-15
+
+    name: "runs-on=${{ matrix.platform }}"
+    runs-on: ${{ matrix.platform }}
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v4
         with:
           python-version: 3.13
       - run: python -c "import sys; print(sys.version)"
-      - run: pip install .[dev]
+      - run: make build_debug
+      - run: make clean
+      - run: make dev_install
       - run: make test
