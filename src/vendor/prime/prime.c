@@ -1,5 +1,5 @@
-#include <math.h>
 #include "prime.h"
+#include <math.h>
 
 extern int is_prime(int x) {
   if (x < 2) {

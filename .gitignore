@@ -1,9 +1,8 @@
 *.egg-info
 *.so
-*.c
+src/*.c
 *.py[co]
 *.html
 .pytest_cache
-!vendor/**
 out
 venv

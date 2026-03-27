@@ -18,6 +18,10 @@ ext_modules = [
         libraries=["m"],
     ),
     Extension(
+        "hasher",
+        sources=sources("hasher.pyx", "vendor/hasher/hasher.c"),
+    ),
+    Extension(
         "hello_lib",
         sources=sources("hello_lib.pyx"),
     ),
