@@ -14,7 +14,7 @@ ext_modules = [
     ),
     Extension(
         "is_prime",
-        sources=sources("is_prime.pyx", "vendor/prime.c"),
+        sources=sources("is_prime.pyx", "vendor/prime/prime.c"),
         libraries=["m"],
     ),
     Extension(

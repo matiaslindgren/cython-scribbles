@@ -4,6 +4,6 @@
 *.py[co]
 *.html
 .pytest_cache
-!vendor/*
+!vendor/**
 out
 venv
