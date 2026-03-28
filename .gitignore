@@ -1,6 +1,6 @@
 *.egg-info
 *.so
-src/*.c
+src/*.[ch]
 *.py[co]
 *.html
 .pytest_cache
