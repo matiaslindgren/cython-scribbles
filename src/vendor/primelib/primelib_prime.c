@@ -1,7 +1,7 @@
-#include "prime.h"
+#include "primelib_prime.h"
 #include <math.h>
 
-extern int is_prime(int x) {
+extern int primelib_is_prime(int x) {
   if (x < 2) {
     return 0;
   }

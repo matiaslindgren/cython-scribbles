@@ -9,9 +9,12 @@ BUILD_PATHS := $(BUILD_LIB_DIR) $(BUILD_TMP_DIR)
 SOURCE_PATHS := $(shell find $(SRC_DIR) -type f -name '*.pyx')
 VENDOR_PATHS := $(shell find $(SRC_DIR)/vendor -type f -name '*.c' -o -name '*.h')
 
+PY_LIBRARY_SUFFIX := $(shell python -c 'from sysconfig import get_config_var as g; print(g("EXT_SUFFIX"))')
 GENERATED_SOURCE_PATHS := $(subst .pyx,.c,$(SOURCE_PATHS))
-GENERATED_LIB_PATHS := $(subst .pyx,.cpython-313-darwin.so,$(SOURCE_PATHS))
+GENERATED_HEADER_PATHS := $(subst .pyx,.h,$(SOURCE_PATHS))
+GENERATED_LIB_PATHS := $(subst .pyx,$(PY_LIBRARY_SUFFIX),$(SOURCE_PATHS))
 GENERATED_ANNOTATION_PATHS := $(subst .pyx,.html,$(SOURCE_PATHS))
+GENERATED_EGG_INFO := $(SRC_DIR)/cython_scribbles.egg-info
 
 .PHONY: all
 all: build_debug dev_install
@@ -22,7 +25,7 @@ dev_install:
 
 .PHONY: clean
 clean:
-	$(RM) -r $(OUTPUT_DIR) $(GENERATED_SOURCE_PATHS) $(GENERATED_LIB_PATHS) $(GENERATED_ANNOTATION_PATHS) cython_scribbles.egg-info
+	$(RM) -r $(OUTPUT_DIR) $(GENERATED_SOURCE_PATHS) $(GENERATED_HEADER_PATHS) $(GENERATED_LIB_PATHS) $(GENERATED_ANNOTATION_PATHS) $(GENERATED_EGG_INFO)
 
 $(OUTPUT_DIR) $(BUILD_PATHS):
 	mkdir -p $@

@@ -8,22 +8,21 @@ def sources(*paths: str) -> list[Path]:
 
 
 ext_modules = [
-    Extension(
-        "empty",
-        sources=sources("empty.pyx"),
-    ),
-    Extension(
-        "is_prime",
-        sources=sources("is_prime.pyx", "vendor/prime/prime.c"),
-        libraries=["m"],
-    ),
-    Extension(
-        "hasher",
-        sources=sources("hasher.pyx", "vendor/hasher/hasher.c"),
-    ),
+    # trivial example in pure python
     Extension(
         "hello_lib",
-        sources=sources("hello_lib.pyx"),
+        sources=sources("hello_lib.py"),
+    ),
+    # still pure python but linking to cmath and using a 3rd party pure C lib
+    Extension(
+        "is_prime",
+        sources=sources("is_prime.py", "vendor/primelib/primelib_prime.c"),
+        libraries=["m"],
+    ),
+    # somewhat messier: pyrex that uses 3rd party pure C libs, but the pure C lib expects to link to a Cython generated public (extern) function we define in Cython
+    Extension(
+        "hasher",
+        sources=sources("hasher.pyx", "vendor/hashlib/hashlib_hasher.c"),
     ),
 ]
 
