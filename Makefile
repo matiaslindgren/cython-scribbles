@@ -6,20 +6,25 @@ BUILD_LIB_DIR := $(OUTPUT_DIR)/bld
 BUILD_TMP_DIR := $(OUTPUT_DIR)/tmp
 BUILD_PATHS := $(BUILD_LIB_DIR) $(BUILD_TMP_DIR)
 
-SOURCE_PATHS := $(shell find $(SRC_DIR) -type f -name '*.pyx')
-VENDOR_PATHS := $(shell find $(SRC_DIR)/vendor -type f -name '*.c' -o -name '*.h')
+MODULES := hasher hello_lib is_prime
 
 PY_LIBRARY_SUFFIX := $(shell python -c 'from sysconfig import get_config_var as g; print(g("EXT_SUFFIX"))')
+BUILD_DEPS := $(shell python get-build-requires.py)
+
+SOURCE_PATHS := $(addsuffix .pyx,$(addprefix $(SRC_DIR)/,$(MODULES)))
+DECLARATION_PATHS := $(shell find $(SRC_DIR) -maxdepth 1 -type f -name '*.pxd')
+VENDOR_PATHS := $(shell find $(SRC_DIR)/vendor -type f -name '*.c' -o -name '*.h')
+
 GENERATED_SOURCE_PATHS := $(subst .pyx,.c,$(SOURCE_PATHS))
 GENERATED_HEADER_PATHS := $(subst .pyx,.h,$(SOURCE_PATHS))
-GENERATED_LIB_PATHS := $(subst .pyx,$(PY_LIBRARY_SUFFIX),$(SOURCE_PATHS))
+GENERATED_LIBRARY_PATHS := $(subst .pyx,$(PY_LIBRARY_SUFFIX),$(SOURCE_PATHS))
 GENERATED_ANNOTATION_PATHS := $(subst .pyx,.html,$(SOURCE_PATHS))
 GENERATED_EGG_INFO := $(SRC_DIR)/cython_scribbles.egg-info
 
-BUILD_DEPS := $(shell python get-build-requires.py)
+PYCACHE_PATHS := $(shell find src tests -type d -name __pycache__)
 
 .PHONY: all
-all: install_build_tools build_debug dev_install
+all: install_build_tools test_pyx build_debug dev_install test_py
 
 .PHONY: install_build_tools
 install_build_tools:
@@ -31,7 +36,7 @@ dev_install:
 
 .PHONY: clean
 clean:
-	$(RM) -r $(OUTPUT_DIR) $(GENERATED_SOURCE_PATHS) $(GENERATED_HEADER_PATHS) $(GENERATED_LIB_PATHS) $(GENERATED_ANNOTATION_PATHS) $(GENERATED_EGG_INFO)
+	$(RM) -r $(OUTPUT_DIR) $(GENERATED_SOURCE_PATHS) $(GENERATED_HEADER_PATHS) $(GENERATED_LIBRARY_PATHS) $(GENERATED_ANNOTATION_PATHS) $(GENERATED_EGG_INFO) $(PYCACHE_PATHS)
 
 $(OUTPUT_DIR) $(BUILD_PATHS):
 	mkdir -p $@
@@ -46,13 +51,26 @@ build_debug: $(BUILD_PATHS)
 		--cython-gdb
 
 .PHONY: format
-format: $(VENDOR_PATHS)
+format: format_c format_py
+
+.PHONY: format_c
+format_c: $(VENDOR_PATHS)
 	clang-format --verbose -i $^
+
+.PHONY: format_py
+format_py:
 	ruff check --fix
 	ruff format
 
 .PHONY: test
-test:
+test: test_pyx test_py
+
+.PHONY: test_pyx
+test_pyx: $(shell find $(SRC_DIR) -type f -name '*.pyx') $(DECLARATION_PATHS)
+	cython-lint --max-line-length 100 $^
+
+.PHONY: test_py
+test_py:
 	ruff check
 	ruff format --check
 	pytest -vv --capture=no tests

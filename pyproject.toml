@@ -11,11 +11,14 @@ requires = [
 ]
 
 [project.optional-dependencies]
+build = [
+  "setuptools >= 77.0.3",
+  "Cython>=3.2.4,<4",
+]
 dev = [
   "pytest",
   "ruff",
-  "setuptools >= 77.0.3",
-  "Cython>=3.2.4,<4",
+  "cython-lint",
 ]
 
 [tool.setuptools.packages.find]
