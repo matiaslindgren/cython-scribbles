@@ -16,8 +16,14 @@ GENERATED_LIB_PATHS := $(subst .pyx,$(PY_LIBRARY_SUFFIX),$(SOURCE_PATHS))
 GENERATED_ANNOTATION_PATHS := $(subst .pyx,.html,$(SOURCE_PATHS))
 GENERATED_EGG_INFO := $(SRC_DIR)/cython_scribbles.egg-info
 
+BUILD_DEPS := $(shell python get-build-requires.py)
+
 .PHONY: all
-all: build_debug dev_install
+all: install_build_tools build_debug dev_install
+
+.PHONY: install_build_tools
+install_build_tools:
+	pip install $(BUILD_DEPS)
 
 .PHONY: dev_install
 dev_install:

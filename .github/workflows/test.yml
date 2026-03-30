@@ -24,8 +24,7 @@ jobs:
         with:
           python-version: 3.13
       - run: python -c "import sys; print(sys.version)"
-      - run: python -c "from tomllib import load; print('\n'.join(load(open('pyproject.toml', 'rb'))['build-system']['requires']))" > build-requires.txt
-      - run: pip install -r build-requires.txt
+      - run: make install_build_tools
       - run: make build_debug
       - run: make clean
       - run: make dev_install
