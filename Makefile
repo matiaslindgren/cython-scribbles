@@ -1,9 +1,7 @@
 SHELL := /bin/bash
 
-SRC_DIR := ./src
-OUTPUT_DIR := ./out
-BUILD_LIB_DIR := $(OUTPUT_DIR)/bld
-BUILD_TMP_DIR := $(OUTPUT_DIR)/tmp
+BUILD_LIB_DIR := out/bld
+BUILD_TMP_DIR := out/tmp
 BUILD_PATHS := $(BUILD_LIB_DIR) $(BUILD_TMP_DIR)
 
 MODULES := hasher hello_lib is_prime
@@ -11,15 +9,15 @@ MODULES := hasher hello_lib is_prime
 PY_LIBRARY_SUFFIX := $(shell python -c 'from sysconfig import get_config_var as g; print(g("EXT_SUFFIX"))')
 BUILD_DEPS := $(shell python get-build-requires.py)
 
-SOURCE_PATHS := $(addsuffix .pyx,$(addprefix $(SRC_DIR)/,$(MODULES)))
-DECLARATION_PATHS := $(shell find $(SRC_DIR) -maxdepth 1 -type f -name '*.pxd')
-VENDOR_PATHS := $(shell find $(SRC_DIR)/vendor -type f -name '*.c' -o -name '*.h')
+SOURCE_PATHS := $(addsuffix .pyx,$(addprefix src/,$(MODULES)))
+DECLARATION_PATHS := $(shell find src -maxdepth 1 -type f -name '*.pxd')
+VENDOR_PATHS := $(shell find src/vendor -type f -name '*.c' -o -name '*.h')
 
 GENERATED_SOURCE_PATHS := $(subst .pyx,.c,$(SOURCE_PATHS))
 GENERATED_HEADER_PATHS := $(subst .pyx,.h,$(SOURCE_PATHS))
 GENERATED_LIBRARY_PATHS := $(subst .pyx,$(PY_LIBRARY_SUFFIX),$(SOURCE_PATHS))
 GENERATED_ANNOTATION_PATHS := $(subst .pyx,.html,$(SOURCE_PATHS))
-GENERATED_EGG_INFO := $(SRC_DIR)/cython_scribbles.egg-info
+GENERATED_EGG_INFO := src/cython_scribbles.egg-info
 
 PYCACHE_PATHS := $(shell find src tests -type d -name __pycache__)
 
@@ -36,9 +34,9 @@ dev_install:
 
 .PHONY: clean
 clean:
-	$(RM) -r $(OUTPUT_DIR) $(GENERATED_SOURCE_PATHS) $(GENERATED_HEADER_PATHS) $(GENERATED_LIBRARY_PATHS) $(GENERATED_ANNOTATION_PATHS) $(GENERATED_EGG_INFO) $(PYCACHE_PATHS)
+	$(RM) -r out $(GENERATED_SOURCE_PATHS) $(GENERATED_HEADER_PATHS) $(GENERATED_LIBRARY_PATHS) $(GENERATED_ANNOTATION_PATHS) $(GENERATED_EGG_INFO) $(PYCACHE_PATHS)
 
-$(OUTPUT_DIR) $(BUILD_PATHS):
+out $(BUILD_PATHS):
 	mkdir -p $@
 
 .PHONY: build_debug
@@ -66,7 +64,7 @@ format_py:
 test: test_pyx test_py
 
 .PHONY: test_pyx
-test_pyx: $(shell find $(SRC_DIR) -type f -name '*.pyx') $(DECLARATION_PATHS)
+test_pyx: $(shell find src -type f -name '*.pyx') $(DECLARATION_PATHS)
 	cython-lint --max-line-length 100 $^
 
 .PHONY: test_py
