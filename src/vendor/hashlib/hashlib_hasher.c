@@ -1,10 +1,11 @@
 #include "hashlib_hasher.h"
-#include "hashlib_hasher_cpython_str.h"
+
 #include <stddef.h>
 #include <string.h>
 
-extern size_t hashlib_hasher_djb2(const unsigned char s[static const 1],
-                                  size_t n) {
+#include "hashlib_hasher_cpython_str.h"
+
+extern size_t hashlib_hasher_djb2(const unsigned char s[static const 1], size_t n) {
   size_t h = 5381;
   for (size_t i = 0; i < n; ++i) {
     h = ((h << 5) + h) + (size_t)(s[i]);
@@ -12,9 +13,9 @@ extern size_t hashlib_hasher_djb2(const unsigned char s[static const 1],
   return h;
 }
 
-extern size_t
-hashlib_hasher_strings_pyhash(const unsigned char strings[static const 1],
-                              size_t lengths[static const 1], size_t n) {
+extern size_t hashlib_hasher_strings_pyhash(const unsigned char strings[static const 1],
+                                            size_t lengths[static const 1],
+                                            size_t n) {
   size_t h = 654321;
   for (size_t i_str = 0, i_buf = 0; i_str < n;) {
     const char *s = (const char *)(strings + i_buf);

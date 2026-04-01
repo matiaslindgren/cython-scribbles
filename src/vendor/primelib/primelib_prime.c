@@ -1,4 +1,5 @@
 #include "primelib_prime.h"
+
 #include <math.h>
 
 extern int primelib_is_prime(int x) {

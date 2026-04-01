@@ -4,4 +4,4 @@
 
 extern int primelib_is_prime(int x);
 
-#endif // INCLUDED_PRIMELIB_PRIME_H
+#endif  // INCLUDED_PRIMELIB_PRIME_H
