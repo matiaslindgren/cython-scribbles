@@ -13,9 +13,11 @@ extern size_t hashlib_hasher_djb2(const unsigned char s[static const 1], size_t 
   return h;
 }
 
-extern size_t hashlib_hasher_strings_pyhash(const unsigned char strings[static const 1],
-                                            size_t lengths[static const 1],
-                                            size_t n) {
+extern size_t hashlib_hasher_strings_pyhash(
+    const unsigned char strings[static const 1],
+    size_t lengths[static const 1],
+    size_t n
+) {
   size_t h = 654321;
   for (size_t i_str = 0, i_buf = 0; i_str < n;) {
     const char *s = (const char *)(strings + i_buf);
