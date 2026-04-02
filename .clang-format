@@ -17,3 +17,5 @@ BinPackParameters: false
 BreakBeforeBinaryOperators: All
 IndentPPDirectives: BeforeHash
 InsertTrailingCommas: Wrapped
+DerivePointerAlignment: false
+PointerAlignment: Left

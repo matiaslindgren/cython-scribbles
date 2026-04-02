@@ -23,7 +23,7 @@ extern size_t hashlib_hasher_strings_pyhash(
   size_t h = 654321;
 
   for (size_t i_str = 0, i_buf = 0; i_str < n;) {
-    const char *s = (const char *)(strings + i_buf);
+    const char* s = (const char*)(strings + i_buf);
     size_t s_len  = lengths[i_str];
     // extern func that must be linked from the Cython generated lib!
     size_t s_hash = public_hasher_cpython_bytes_hash(s, s_len);
