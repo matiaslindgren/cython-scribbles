@@ -21,3 +21,17 @@ def test_import_hasher():
 
     from hasher import djb2  # noqa: F401
     from hasher import strings_pyhash  # noqa: F401
+
+
+def test_import_vendor_vectorlib():
+    import vendor_vectorlib  # noqa: F401
+
+    assert vendor_vectorlib.__file__.endswith(".so")
+
+    from vendor_vectorlib import InternalVectorF64  # noqa: F401
+
+
+def test_import_vector():
+    import vector  # noqa: F401
+
+    from vector import VectorF64  # noqa: F401

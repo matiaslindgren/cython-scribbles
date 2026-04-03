@@ -30,4 +30,4 @@ Extern function defined in Cython, that an external C library dependency expects
 
 ### `vector`
 
-Micro-sized linear algebra library written with the C API (without Cython), which is linked into the Cython module
+Micro-sized linear algebra library written using the Python C API (without Cython), which is linked into and extended by the Cython module

@@ -4,7 +4,7 @@ BUILD_LIB_DIR := out/bld
 BUILD_TMP_DIR := out/tmp
 BUILD_PATHS := $(BUILD_LIB_DIR) $(BUILD_TMP_DIR)
 
-MODULES := hasher hello_lib is_prime
+MODULES := hasher hello_lib is_prime vector
 
 PY_LIBRARY_SUFFIX := $(shell python -c 'from sysconfig import get_config_var as g; print(g("EXT_SUFFIX"))')
 BUILD_DEPS := $(shell python get-build-requires.py)
