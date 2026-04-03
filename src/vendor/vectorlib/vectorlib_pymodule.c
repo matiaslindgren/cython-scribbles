@@ -1,6 +1,6 @@
 #include <Python.h>
-#if !(PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION == 15)
-  #error "expected Python.h for 3.15"
+#if !(PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION == 14)
+  #error "expected Python.h for 3.14"
 #endif
 
 #include <assert.h>
@@ -66,13 +66,20 @@ static int pymodule_exec(PyObject* module) {
   return 0;
 }
 
-static PyModuleDef_Slot pymodule_slots[] = {
-    {Py_mod_name, "vendor_vectorlib"},
-    {Py_mod_doc,  "smol linalg lib" },
-    {Py_mod_exec, pymodule_exec     },
-    {0,           nullptr           },
+static PyModuleDef_Slot pymodule_vectorlib_slots[] = {
+    {Py_mod_exec,                  pymodule_exec                             },
+    {Py_mod_multiple_interpreters, Py_MOD_MULTIPLE_INTERPRETERS_NOT_SUPPORTED},
+    {0,                            nullptr                                   },
 };
 
-PyMODEXPORT_FUNC PyModExport_vendor_vectorlib(void) {
-  return pymodule_slots;
+static PyModuleDef pymodule_vectorlib = {
+    .m_base  = PyModuleDef_HEAD_INIT,
+    .m_name  = "vendor_vectorlib",
+    .m_doc   = "smol linalg lib",
+    .m_size  = 0,
+    .m_slots = pymodule_vectorlib_slots,
+};
+
+PyMODINIT_FUNC PyInit_vendor_vectorlib(void) {
+  return PyModuleDef_Init(&pymodule_vectorlib);
 }

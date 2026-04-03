@@ -1,7 +1,7 @@
 [project]
 name = "cython-scribbles"
 version = "0.0.1"
-requires-python = '>=3.13'
+requires-python = '>=3.14'
 
 [build-system]
 build-backend = "setuptools.build_meta"
@@ -11,14 +11,14 @@ requires = [
 ]
 
 [project.optional-dependencies]
-build = [
+build-dev = [
   "setuptools >= 77.0.3",
   "Cython>=3.2.4,<4",
+  "cython-lint",
 ]
 dev = [
   "pytest",
   "ruff",
-  "cython-lint",
 ]
 
 [tool.setuptools.packages.find]

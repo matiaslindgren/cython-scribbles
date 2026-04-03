@@ -19,10 +19,10 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
         with:
-          python-version: 3.13
+          python-version: 3.14
       - run: python -c "import sys; print(sys.version)"
       - run: make install_build_tools
       - run: make build_debug

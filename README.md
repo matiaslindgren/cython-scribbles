@@ -6,7 +6,7 @@ Small [Cython](https://cython.readthedocs.io/en/stable/index.html) studies
 
 ```bash
 #!/usr/bin/env bash
-python3.15d -m venv .venv && source .venv/bin/activate
+python3.14d -m venv .venv && source .venv/bin/activate
 ```
 ```bash
 #!/usr/bin/env bash
