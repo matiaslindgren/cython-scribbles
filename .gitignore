@@ -6,3 +6,4 @@ src/*.[ch]
 .pytest_cache
 out
 venv
+.hypothesis

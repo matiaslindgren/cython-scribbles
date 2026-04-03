@@ -17,6 +17,7 @@ build-dev = [
   "cython-lint",
 ]
 dev = [
+  "hypothesis",
   "pytest",
   "ruff",
 ]

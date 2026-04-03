@@ -1,31 +1,38 @@
+from collections.abc import Generator
+
 from cython import cclass, ccall, address, cast, size_t
 from cython.cimports.vector import (
     InternalVectorF64,
     vectorlib_add,
-    vectorlib_resize,
+    vectorlib_sub,
+    vectorlib_mul,
 )
 
 
 @cclass
 class VectorF64(InternalVectorF64):
-    def __iadd__(self, other: InternalVectorF64):
-        vectorlib_add(address(self.v), address(other.v))
-        return self
-
-    def __len__(self):
+    def __len__(self) -> int:
         return cast(int, self.v.length)
 
-    @ccall
-    def from_list(self, new_value: list[float]):
-        n: size_t = cast(size_t, len(new_value))
-        vectorlib_resize(address(self.v), n)
-        for i, x in enumerate(new_value):
-            self.v.data[i] = x
+    def __iter__(self) -> Generator[float]:
+        for i in range(len(self)):
+            yield self.v.data[cast(size_t, i)]
 
     @ccall
     def into_list(self) -> list[float]:
-        n: size_t = self.v.length
-        res: list[float] = [0 for _ in range(n)]
-        for i in range(n):
-            res[i] = cast(float, self.v.data[i])
+        return list(self)
+
+    def __add__(self, other: InternalVectorF64):
+        res: VectorF64 = type(self)(len(self))
+        vectorlib_add(address(res.v), address(self.v), address(other.v))
+        return res
+
+    def __sub__(self, other: InternalVectorF64):
+        res: VectorF64 = type(self)(len(self))
+        vectorlib_sub(address(res.v), address(self.v), address(other.v))
+        return res
+
+    def __mul__(self, other: InternalVectorF64):
+        res: VectorF64 = type(self)(len(self))
+        vectorlib_mul(address(res.v), address(self.v), address(other.v))
         return res

@@ -1,12 +1,39 @@
-import pytest
 from typing import Any
-from itertools import chain
+
+import pytest
+from hypothesis import given, strategies as st
+
+from .fuzz_strategies import non_negative_sizes, nice_floats
 
 from vendor_vectorlib import InternalVectorF64
 
 
 @pytest.mark.parametrize(
-    "not_length",
+    "arg",
+    [
+        pytest.param(p, id=f"{p!r}")
+        for p in [
+            float("inf"),
+            -float("inf"),
+            -12.3,
+            45.6,
+            "one",
+            None,
+            {},
+            ("hello", "world"),
+            ("1.5", "2.5"),
+            {1.5, 2.5},
+            ["1", "2"],
+        ]
+    ],
+)
+def test_create_vector_invalid_type(arg: Any) -> None:
+    with pytest.raises(TypeError):
+        InternalVectorF64(arg)
+
+
+@pytest.mark.parametrize(
+    "arg",
     [
         pytest.param(p, id=f"{p!r}")
         for p in [
@@ -14,26 +41,20 @@ from vendor_vectorlib import InternalVectorF64
             -10,
             -1,
             0,
-            "one",
-            None,
-            {},
             [],
         ]
     ],
 )
-def test_create_vector_invalid_length(not_length: Any) -> None:
-    with pytest.raises(TypeError):
-        InternalVectorF64(not_length)
+def test_create_vector_valid_type_invalid_value(arg: Any) -> None:
+    with pytest.raises(ValueError):
+        InternalVectorF64(arg)
 
 
-@pytest.mark.parametrize(
-    "length",
-    chain(
-        range(1, 10),
-        range(125, 130),
-        range(4090, 4100),
-        range(2**16, 5 + 2**16),
-    ),
-)
-def test_create_vector_valid_length(length: int) -> None:
+@given(non_negative_sizes())
+def test_create_vector_from_length(length: int) -> None:
     assert InternalVectorF64(length)
+
+
+@given(st.lists(nice_floats(), min_size=1))
+def test_create_vector_from_values(values: list[float]) -> None:
+    assert InternalVectorF64(values)

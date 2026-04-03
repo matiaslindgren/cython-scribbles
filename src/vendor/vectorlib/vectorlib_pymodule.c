@@ -1,6 +1,6 @@
 #include <Python.h>
 #if !(PY_MAJOR_VERSION == 3 && PY_MINOR_VERSION == 14)
-  #error "expected Python.h for 3.14"
+  #error "expected Python.h 3.14"
 #endif
 
 #include <assert.h>
@@ -15,30 +15,72 @@ static void pymodule_PyVectorF64_dealloc(PyObject* v_f64) {
   Py_TYPE(self)->tp_free(self);
 }
 
-static int pymodule_PyVectorF64_init(PyObject* v_f64, PyObject* args, PyObject* Py_UNUSED(kwds)) {
-  pymodule_PyVectorF64* self = (pymodule_PyVectorF64*)v_f64;
-  assert(self);
+static int
+pymodule_PyVectorF64_init(PyObject* self_obj, PyObject* args, PyObject* Py_UNUSED(kwds)) {
+  assert(self_obj);
+  assert(args);
 
-  Py_ssize_t length = 0;
-  if (!PyArg_ParseTuple(args, "n", &length)) {
-    return -1;
+  pymodule_PyVectorF64* self = (pymodule_PyVectorF64*)self_obj;
+  PyObject* arg              = nullptr;
+  size_t length              = 0;
+
+  if (!PyArg_ParseTuple(args, "O", &arg)) {
+    goto return_error;
   }
 
-  if (length <= (Py_ssize_t)0) {
+  if (PyLong_CheckExact(arg)) {
+    length = PyLong_AsSize_t(arg);
+    if (!length || (PyErr_Occurred() && (length == (size_t)-1))) {
+      PyErr_Format(
+          PyExc_ValueError,
+          "InternalVectorF64 initial count of zeros must be a positive integer, not %S",
+          arg
+      );
+      goto return_error;
+    }
+  } else if (PyList_CheckExact(arg)) {
+    Py_ssize_t arg_length = PyList_Size(arg);
+    if (PyErr_Occurred()) {
+      goto return_error;
+    }
+    if (arg_length <= 0) {
+      PyErr_Format(
+          PyExc_ValueError,
+          "InternalVectorF64 initial list[float] arg (length=%zd) must not be empty",
+          arg_length
+      );
+      goto return_error;
+    }
+    length = (size_t)arg_length;
+  } else {
     PyErr_Format(
         PyExc_TypeError,
-        "InternalVectorF64 initial length must be a positive integer, not %zd",
-        length
+        "invalid arg='%S' to InternalVectorF64.__init__, should be: int | list[float]",
+        arg
     );
-    return -1;
+    goto return_error;
   }
 
-  if (!vectorlib_zeros(&(self->v), (size_t)length)) {
-    PyErr_Format(PyExc_RuntimeError, "failed allocating InternalVectorF64 of length %zd", length);
-    return -1;
+  if (!vectorlib_zeros(&(self->v), length)) {
+    PyErr_Format(PyExc_RuntimeError, "failed allocating InternalVectorF64 of length %zu", length);
+    goto return_error;
+  }
+
+  if (PyList_Check(arg)) {
+    for (size_t i = 0; i < length; ++i) {
+      PyObject* py_value = PyList_GET_ITEM(arg, (Py_ssize_t)i);
+      double value       = PyFloat_AsDouble(py_value);
+      if (PyErr_Occurred() && (value == -1.0)) {
+        goto return_error;
+      }
+      (self->v).data[i] = value;
+    }
   }
 
   return 0;
+
+return_error:
+  return -1;
 }
 
 static PyTypeObject pymodule_PyVectorF64Type = {

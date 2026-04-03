@@ -22,6 +22,7 @@ jobs:
     runs-on: ${{ matrix.platform }}
     env:
       CYTHON_SCRIBBLES_C_STANDARD: ${{ matrix.c_standard }}
+      HYPOTHESIS_PROFILE: fuzz
 
     steps:
       - uses: actions/checkout@v6
