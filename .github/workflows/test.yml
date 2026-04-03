@@ -12,12 +12,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform:
-          - ubuntu-24.04
-          - macos-15
+        include:
+          - platform: ubuntu-24.04
+            c_standard: c2x
+          - platform: macos-15
+            c_standard: c23
 
-    name: "runs-on=${{ matrix.platform }}"
+    name: "runs-on=${{ matrix.platform }} -std=${{ matrix.c_standard }}"
     runs-on: ${{ matrix.platform }}
+    env:
+      CYTHON_SCRIBBLES_C_STANDARD: ${{ matrix.c_standard }}
 
     steps:
       - uses: actions/checkout@v6

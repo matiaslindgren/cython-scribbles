@@ -1,13 +1,18 @@
 from setuptools import setup, Extension
 from Cython.Build import cythonize
 from pathlib import Path
+from os import environ
 
 
 def sources(*paths: str) -> list[Path]:
     return [Path("./src") / p for p in paths]
 
 
-extra_compile_args = ["-std=c23"]
+def c_standard() -> str:
+    return environ.get("CYTHON_SCRIBBLES_C_STANDARD", "c23")
+
+
+extra_compile_args = [f"-std={c_standard()}"]
 
 ext_modules = [
     Extension(
